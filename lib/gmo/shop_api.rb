@@ -130,6 +130,63 @@ module GMO
         post_request name, options
       end
 
+      ## 2.10.2.3.決済実行
+      # 指定されたユーザの登録済みカードを使って決済を実行する
+      ### @return ###
+      # ACS
+      # OrderID
+      # Forward
+      # Method
+      # PayTimes
+      # Approve
+      # TranID
+      # CheckString
+      # ClientField1
+      # ClientField2
+      # ClientField3
+      ### example ###
+      # gmo.exec_tran_with_member_id({
+      #   order_id:       100,
+      #   access_id:      "a41d83f1f4c908baeda04e6dc03e300c",
+      #   access_pass:    "d72eca02e28c88f98b9341a33ba46d5d",
+      #   method:         1,
+      #   pay_times:      1,
+      #   member_id:      "KJDF89D6",
+      #   card_seq:       0,
+      #   client_field_1: "client_field1"
+      # })
+      # {"ACS"=>"0", "OrderID"=>"100", "Forward"=>"2a99662", "Method"=>"1", "PayTimes"=>"", "Approve"=>"6294780", "TranID"=>"1302160543111111111111192829", "TranDate"=>"20130216054346", "CheckString"=>"3e455a2168fefc90dbb7db7ef7b0fe82", "ClientField1"=>"client_field1", "ClientField2"=>"", "ClientField3"=>""}
+      def exec_tran_with_member_id(options = {})
+        name = "ExecTran.idPass"
+        if options[:client_field_1] || options[:client_field_2] || options[:client_field_3]
+          options[:client_field_flg] = "1"
+        else
+          options[:client_field_flg] = "0"
+        end
+        options[:device_category] = "0"
+
+        # args = {
+        #   "AccessID"        => options[:access_id],
+        #   "AccessPass"      => options[:access_pass],
+        #   "OrderID"         => options[:order_id],
+        #   "Method"          => options[:method],
+        #   "PayTimes"        => options[:pay_times],
+        #   "MemberID"        => options[:member_id],
+        #   "SeqMode"         => options[:seq_mode],
+        #   "CardSeq"         => options[:card_seq],
+        #   "HttpAccept"      => options[:http_accept],
+        #   "HttpUserAgent"   => options[:http_ua],
+        #   "DeviceCategory"  => "0",
+        #   "ClientField1"    => options[:client_field_1],
+        #   "ClientField2"    => options[:client_field_2],
+        #   "ClientField3"    => options[:client_field_3],
+        #   "ClientFieldFlag" => client_field_flg
+        # }
+        required = [:access_id, :access_pass, :order_id, :member_id, :card_seq]
+        assert_required_options(required, options)
+        post_request name, options
+      end
+
       # 【コンビニ払い】
       # 2.1.2.2. 決済実行
       # お客様が入力した情報で後続の決済センターと通信を行い決済を実施し、結果を返します。
